@@ -16,10 +16,10 @@ html {
 
 .webgl
 {
-    position: fixed; /* El elemento queda fijo independiente del scroll */
+    position: fixed; /* El elemento queda fijo independiente del scroll - Explicacion el canvas esta fijo lo que se hace es que cuando se mueve el scrool se esta moviendo la camara, lo cual genera el efecto. */
     top: 0;
     left: 0;
-    outline: none;
+    outline: none; /*Elimina el borde que aparece al hacer clic o navegar con el teclado*/
 }
 
 
@@ -28,7 +28,7 @@ html {
     display: flex;
     align-items: center;
     height: 100vh; /* 100 porciento de la altura del navegador */
-    position: relative;
+    position: relative; 
     font-family: 'Cabin', sans-serif;
     color: #ffeded;
     text-transform: uppercase;
@@ -37,7 +37,7 @@ html {
     padding-right: 10%;
 }
 
-section:nth-child(odd)
+section:nth-child(odd) /*Selecciona todos los elementos <section> que son hijos impares dentro de su contenedor padre*/
 {
     justify-content: flex-end;
 }

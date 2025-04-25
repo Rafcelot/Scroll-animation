@@ -1,8 +1,9 @@
 import * as THREE from 'three'
 import GUI from 'lil-gui'
 import { textureLoad } from 'three/tsl'
+
 import gsap from 'gsap'
-console.log(gsap)
+
 
 /**
  * Debug
@@ -61,7 +62,7 @@ const mesh3 = new THREE.Mesh(
     material
 )
 
-mesh1.position.y = - objectsDistance * 0
+mesh1.position.y = - objectsDistance * 0 // es negativo por que se ubican hacia abajo.
 mesh2.position.y = - objectsDistance * 1
 mesh3.position.y = - objectsDistance * 2
 
@@ -72,7 +73,7 @@ mesh3.position.x = 2
 
 scene.add(mesh1, mesh2, mesh3)
 
-const sectionMeshes = [ mesh1, mesh2, mesh3 ] // Esto permite agurapar las mesh y despues con for of animarlas todas.
+const sectionMeshes = [ mesh1, mesh2, mesh3 ] // Esto permite agrupar las mesh y despues con for of animarlas todas.
 
 /**
  * Particles
@@ -83,23 +84,23 @@ const positions = new Float32Array(ParticlesCount * 3)
 
 for(let i = 0; i < ParticlesCount; i++)
 {
-    positions[i * 3 + 0] = (Math.random() - 0.5) * 10
-    positions[i * 3 + 1] = objectsDistance * 0.4 - Math.random() * objectsDistance * sectionMeshes.length // se resta 1.6 que seria la altuera por un numero entre 0 y 12 esto lo distribuye por toda la pantalla.
+    positions[i * 3 + 0] = (Math.random() - 0.5) * 10 // Esto seleccion todos x dentro del float32Array 
+    positions[i * 3 + 1] = objectsDistance * 0.4 - Math.random() * objectsDistance * sectionMeshes.length // se resta 1.6 que seria la altura por un numero entre 0 y 12 esto lo distribuye por toda la pantalla.
     positions[i * 3 + 2] = (Math.random() - 0.5) * 10
 }
 
-const particlesGeometry = new THREE.BufferGeometry
-particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+const particlesGeometry = new THREE.BufferGeometry // crea una geometria vacia
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3)) // Llenamos esa geometria  - 'position' atributo especial reconocido por el motor - (positions, 3) toma estos datos y leelos de 3 en 3
 
 // Material
-const particlesMaterial = new THREE.PointsMaterial({
+const particlesMaterial = new THREE.PointsMaterial({ // Material Three diseñado para dibujar particulas o puntos individuales. 
     color: parameters.materialColor,
-    sizeAttenuation: true,
+    sizeAttenuation: true, // el tamaño de las particulas cambia según la distancia a la cámara
     size: 0.03 
 })
 
 // Point
-const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+const particles = new THREE.Points(particlesGeometry, particlesMaterial) // Renderiza puntos individuales.
 scene.add(particles)
 
 /**
@@ -159,20 +160,21 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Scroll 
  */
 let scrollY = window.scrollY // Esto permite saber donde esta el scroll y guardarlo en una variable - Se hace por si el javascript no se carga a tiempo
-let currentSection = 0 
+console.log(scrollY)
+let currentSection = 0 // Esta variable guarda en que sección estas actualmente
 
 window.addEventListener('scroll', () => 
 {
-    scrollY = window.scrollY
+    scrollY = window.scrollY // cada vez que el usuario hace scroll, actualiza el valor de scrollY
     
-    const newSection = Math.round(scrollY / sizes.height) // esto genera una variable que nos va a decir en que seccion estamos.
+    const newSection = Math.round(scrollY / sizes.height) // esto genera una variable que nos va a decir en que seccion estamos. el scroll y va a variar y el sizes.height va a ser fijo
     
-    if(newSection != currentSection)
+    if(newSection != currentSection) // compara si el usuario cambió de sección
     {
-        currentSection = newSection
+        currentSection = newSection // Actualiza la variable para evitar que el efecto se repita mientras estás en la misma sección
         
-        gsap.to(
-            sectionMeshes[currentSection].rotation,
+        gsap.to( // esto es una libria de animaciones 
+            sectionMeshes[currentSection].rotation, // esto busca el mesh correspondiente para animarlo.
             {
                 duration: 1.5,
                 ease: 'power2.inOut',
@@ -191,11 +193,13 @@ const cursor = {}
 cursor.x = 0
 cursor.y = 0
 
-window.addEventListener('mousemove', (event) =>
+window.addEventListener('mousemove', (event) => // cada vez que el usuario mueve el mouse
 {
-    cursor.x = event.clientX / sizes.width - 0.5
+    cursor.x = event.clientX / sizes.width - 0.5 // Normaliza el valor entre -0.5 y 0.5
     cursor.y = event.clientY / sizes.height - 0.5
 } )
+
+
 
 /**
  * Animate
@@ -213,9 +217,9 @@ const tick = () =>
     // animate camera
     camera.position.y = - scrollY / sizes.height * objectsDistance // al dividir por sizes.height hace que la camara baje exactamente una unidad en la escena ya que si el viewport mide 1000 px y se divide por 1000px que se deplazo el scroll da 1. y se multiplica por 4 por que es la separacion en la que estan los mesh
     
-    const parallaxX = cursor.x * 0.5
+    const parallaxX = cursor.x * 0.5 // Al multiplicar por 0.5 limita el movimiento de la camara a un rango mas pequeño para que nose mueva demasiado lejos
     const parallaxY = - cursor.y * 0.5
-    cameraGroup.position.x += (parallaxX - cameraGroup.position.x) * 5 * deltaTime 
+    cameraGroup.position.x += (parallaxX - cameraGroup.position.x) * 5 * deltaTime //parallaxX es su destino, cameragroup es su posicion actual la resta seria cuanto falta para llegar - al restar camera.Group position suaviza el movimiento y lo frena naturalmente
     cameraGroup.position.y += (parallaxY - cameraGroup.position.y) * 5 * deltaTime
     
     // Animate meshes
